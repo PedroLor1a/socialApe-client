@@ -1,13 +1,19 @@
 import { Grid } from "@mui/material";
+import { withStyles } from "@mui/styles";
+
 import { useDispatch, useSelector } from "react-redux";
 import { useEffect } from "react";
 import { allScreams } from "../redux/actions";
 import Scream from "../components/Scream";
+import Profile from "../components/Profile";
+import PropTypes from "prop-types";
 
-const Home = () => {
+const styles = {};
+
+const Home = ({ classes }) => {
   const screams = useSelector((state) => state.screams);
-  const dispatch = useDispatch();
 
+  const dispatch = useDispatch();
   useEffect(() => {
     dispatch(allScreams());
   }, [dispatch]);
@@ -24,16 +30,23 @@ const Home = () => {
                 userHandle={e.userHandle}
                 createdAt={e.createdAt}
                 body={e.body}
+                likeCount={e.likeCount}
+                commentCount={e.commentCount}
+                screamId={e.screamsId}
               />
             </div>
           );
         })}
       </Grid>
       <Grid item sm={4} xs={12}>
-        <p>Profile...</p>
+        <Profile />
       </Grid>
     </Grid>
   );
 };
 
-export default Home;
+Home.protoTypes = {
+  classes: PropTypes.object.isRequired,
+};
+
+export default withStyles(styles)(Home);

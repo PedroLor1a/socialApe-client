@@ -7,6 +7,9 @@ import { TextField } from "@mui/material";
 import { Grid } from "@mui/material";
 import { Button } from "@mui/material";
 import axios from "axios";
+import { Link } from "react-router-dom";
+import CircularProgress from "@mui/material/CircularProgress";
+import { useNavigate } from "react-router-dom";
 
 const styles = {
   form: {
@@ -24,19 +27,24 @@ const styles = {
   },
   button: {
     marginTop: 20,
+    position: "relative",
   },
   customErorr: {
     color: "red",
     fontSize: "0.8rem",
     marginTop: 10,
   },
+  progress: {
+    position: "absolute",
+  },
 };
-
 const Login = ({ classes }) => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const [errors, setErrors] = useState({});
+
+  const navigate = useNavigate();
 
   const handleSubmit = (event) => {
     event.preventDefault();
@@ -52,12 +60,16 @@ const Login = ({ classes }) => {
         userData
       )
       .then((res) => {
-        console.log(res.data);
+        localStorage.setItem("FBIdToken", `Bearer ${res.data.token}`);
+        const token = localStorage.getItem("FBIdToken");
+        console.log(token, "TOKEN");
         setLoading(false);
+        window.location.reload();
+        navigate("/");
       })
       .catch((err) => {
         setLoading(false);
-        setErrors(err.response.data);
+        setErrors(err.response?.data);
       });
   };
   // const handleChange = (event) => {
@@ -108,9 +120,17 @@ const Login = ({ classes }) => {
             type="submit"
             variant="contained"
             color="primary"
-            className={classes.button}>
+            className={classes.button}
+            disable={loading}>
             Login
+            {loading && (
+              <CircularProgress size={30} className={classes.progress} />
+            )}
           </Button>
+          <br />
+          <small>
+            dont have an account ? sign up <Link to="/signup">here</Link>
+          </small>
         </form>
       </Grid>
       <Grid item sm />
